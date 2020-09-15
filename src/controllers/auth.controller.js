@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import config from '../config';
 import Role from "../models/Role";
 
+// Create User
 export const singUp = async (request, response) => {
   const { username, email, password, roles } = request.body; 
 
@@ -24,19 +25,38 @@ export const singUp = async (request, response) => {
 
   const savedUser = await user.save();
 
-  const token = jwt.sign(
-    {
-      id: savedUser._id,
-    },
-    config.SECRET,
-    {
-      expiresIn: '1d',
-    }
-  );
+  const { secret, expiresIn } = config.jwt;
+
+  const token = jwt.sign({ id: savedUser._id }, secret, {
+    expiresIn,
+  });
   
   return response.status(200).json(token);
 };
 
+// Login User
 export const singIn = async (request, response) => {
-  response.json('signin');
+
+  const { email, password } = request.body;
+  
+  const user = await (User.findOne({ email })).populate('roles');
+
+  if (!user) {
+    return response.status(400).json({ message: 'User not found' });
+  }
+
+  // Validate password
+  const matchPassword = await User.comparePassword(password, user.password);
+
+  if(!matchPassword) {
+    return response.status(401).json({ message: 'Incorrect user/password' });
+  }
+  
+  const { secret, expiresIn } = config.jwt;
+
+  const token = jwt.sign({ id: user._id}, secret, {
+    expiresIn,
+  });
+
+  return response.json({ token });
 };

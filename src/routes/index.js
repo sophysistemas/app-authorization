@@ -2,8 +2,9 @@ import { Router } from 'express';
 import appInfo from '../../package.json';
 
 import productoRouter from './product.routes';
-import userRouter from './user.routes';
 import authRouter from './auth.routes';
+import roleRouter from './role.routes';
+import userRouter from './user.routes';
 
 const routes = Router();
 
@@ -19,8 +20,8 @@ routes.get('/', (request, response) => {
 })
 
 routes.use('/products', productoRouter);
-routes.use('/users', userRouter);
 routes.use('/auth', authRouter);
-
+routes.use('/roles', roleRouter);
+routes.use('/users', userRouter);
 
 export default routes;

@@ -43,8 +43,8 @@ export const updateProductById = async (request, response) => {
 
 export const deleteProductById = async (request, response) => {
   const { product_id } = request.params;
+  
+  const product = await Product.findByIdAndDelete(product_id);
 
-  const product = await Product.findOneAndDelete(product_id);
-
-  return response.json( { OK: 'Produto elimiado' });
+  return response.json( { OK: 'Produto eliminado' });
 }
